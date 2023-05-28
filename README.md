@@ -148,6 +148,8 @@ Message broker between YouTube chat stream and ChatGPT.
     | max_tokens_per_request | Max number of tokens which can be contained in a request. | 256 |
     | interval_sec | Interval of ChatGPT API call | 20.0 \[sec\] | 
 ### Notice
+- Please refer [pytchat README](https://github.com/taizan-hokuto/pytchat) to know the type of YouTube Chat item used by get_item_cb, pre_filter_cb and post filter_cb.
+- Stamps in a message and messages consisted by stamps only are removed defaultly even if user doesn't set pre_filter_cb.
 - Default value of interval_sec is 20.0, since free user of OpenAI API can get only 3 completions per minitue.
 - The system role given by user remains ever as the oldest sentence of current context even if the number of messages is reached to the maximum, so ChatGPT doesn't forgot the role while current cunversation.
 
