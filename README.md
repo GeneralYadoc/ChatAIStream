@@ -1,26 +1,26 @@
-# ChatAIAgent
-Message broker between user and ChatGPT.
+# ChatAIStream
+Message broker between YouTube chat stream and ChatGPT.
 
 ## The user of this library can
-- easily give role and messages to ChatGPT, and obtain answers.
-- spool messages which given before ChatGPT finish generating current answer.
+- pick up massegase from YouTube Chat and generate answer by ChatGPT.
+- easily give role to ChatGPT.
 
 ## Hou to install
 
 ### Install from PyPI
 - Install package to your environment.<br>
     ```install
-    $ pip install chatai-agent
+    $ pip install chatai-stream
     ```
 
 ### Install from GitHub repository
 - Clone this repository.<br>
   ```clone
-  $ clone https://github.com/GeneralYadoc/ChatAIAgent.git
+  $ clone https://github.com/GeneralYadoc/ChatAIStream.git
   ```
 - Change directory to the root of the repository.<br>
   ```cd
-  $ cd ChatAIAgent
+  $ cd ChatAIStream
   ```
 - Install package to your environment.<br>
   ```install
@@ -31,80 +31,115 @@ Message broker between user and ChatGPT.
 
 - Sample codes exist [here](samples/sample.py).
   ``` sample.py
+  # To execute this sample, please install streamchat-agent from PyPI as follows.
+  # $ pip install streamchat-agent
   import sys
+  import time
+  import math
   import datetime
-  import ChatAIAgent as ca  # Import this.
+  import ChatAIStream as cas
 
-  # callback for getting questions that actually thrown to ChatGPT
-  # If you register external info to user message when you put it, you can obtain the external info here.
-  def ask_cb(user_message):
-    time_str = user_message.extern.strftime ('%H:%M:%S')
-    print(f"\n[question {time_str}] {user_message.message}\n")
+  # print sentencce by a character incrementally.
+  def print_incremental(st, interval_sec):
+    for i in range(len(st)):
+      if not running:
+        break
+      print(f"{st[i]}", end='')
+      sys.stdout.flush()
+      interruptible_sleep(interval_sec)
+
+  # Customized sleep for making available of running flag interruption.
+  def interruptible_sleep(time_sec):
+    counter = math.floor(time_sec / 0.01)
+    frac = time_sec - (counter * 0.01)
+    for i in range(counter):
+      if not running:
+        break
+      time.sleep(0.01)
+    if not running:
+      return
+    time.sleep(frac)
 
   # callback for getting answer of ChatGPT
   def answer_cb(user_message, completion):
+    print(f"\n[{user_message.extern.author.name} {user_message.extern.datetime}] {user_message.message}\n")
+    interruptible_sleep(3)
     time_str = datetime.datetime.now().strftime ('%H:%M:%S')
     message = completion.choices[0]["message"]["content"]
-    print(f"[answer {time_str}] {message}\n")
+    print(f"[ChatGPT {time_str}] ", end='')
+    print_incremental(message, 0.05)
+    print("\n")
+    interruptible_sleep(5)
 
-  # ChatGPT API Key is given from command line in this example.
-  if len(sys.argv) <= 1:
+  running = False
+
+  # YouTube Video ID and ChatGPT API Key is given from command line in this example.
+  if len(sys.argv) <= 2:
     exit(0)
 
-  system_role="You are a cheerful assistant who speek English and can get conversation exciting with user."
+  # Set params of getting messages from stream source.
+  stream_params=cas.streamParams(video_id=sys.argv[1])
 
-  # Create ChatAIAgent instance.
-  params = ca.params(
-    api_key=sys.argv[1],
-    system_role=system_role,
-    ask_cb=ask_cb,
-    answer_cb=answer_cb,
-    max_tokens_per_request = 2048
+  # Set params of Chat AI.
+  ai_params=cas.aiParams(
+    api_key = sys.argv[2],
+    system_role = "You are a cheerful assistant who speek English and can get conversation exciting with user.",
+    answer_cb = answer_cb
   )
-  agent = ca.ChatAIAgent( params )
 
-  # Wake up internal thread on which ChatGPT answer messages will be generated.
-  agent.start()
+  # Create ChatAIStream instance.
+  ai_stream = cas.ChatAIStream(cas.params(stream_params=stream_params, ai_params=ai_params))
 
-  while True:
-    message = input("")
-    if message == "":
-      break
-    # Put message received from stdin on internal queue to be available from internal thread.
-    agent.put_message(ca.userMessage(message=message,extern=datetime.datetime.now()))
+  running = True
 
-  # Finish generating answers.
+  # Wake up internal thread to get chat messages from stream and ChatGPT answers.
+  ai_stream.start()
+
+  # Wait any key inputted from keyboad.
+  input()
+
+  # Turn off runnging flag in order to finish printing fung of dhit sample.
+  running=False
+
+  # Finish getting ChatGPT answers.
   # Internal thread will stop soon.
-  agent.disconnect()
+  ai_stream.disconnect()
 
   # terminating internal thread.
-  agent.join()
+  ai_stream.join()
 
-  del agent
+  del ai_stream
+
   ```
 
-- Output of the sample
-  ```output
-  $ python3 samples/sample.py XXXXXXXXXXXXXXXXXX (OpenAI API Key) 
-  Who are you?
+- Usage of the sample
+  ```usage
+  $ python3 ./sample2.py VIDEO-ID OpenAI-API-KEY
+  ```
+- Output of the sample<br>
+  The outputs of the right window are provided by this sample.<br>
+  Left outputs are also available by ChatAIStream.
+  ![](ReadMeParts/ChatAIAgent.gif)
 
-  [question 17:30:35] Who are you?
-
-  [answer 17:30:37] Hello! I am a cheerful assistant and I'm here to help you. My name is not important, but I'm happy to assist you with anything you need. How can I help you today?
-
-  Would you make sound of a cat?
-
-  [question 17:31:14] Would you make sound of a cat?
-
-  [answer 17:31:16] Meow! Meow! That's the sound a cat makes. Is there anything else you would like me to assist you with?
-    ```
 ## Arguments of Constructor
-- ChatAIAgent object can be configured with following params given to constructor.
+- ChatAIStream object can be configured with following params given to constructor.
+
+  ### steamParams
+    | name | description | default |
+    |------|------------|---------|
+    | video_id | String following after 'v=' in url of target YouTube live | - |
+    | get_item_cb | Chat items are thrown to this callback | None |
+    | pre_filter_cb | Filter set before internal queue | None |
+    | post_filter_cb | Filter set between internal queue and get_item_cb | None |
+    | max_queue_size | Max slots of internal queue (0 is no limit) | 1000 |
+    | interval_sec | Polling interval of picking up items from YouTube | 0.01 \[sec\] | 
+  ### aiParams
+
 
     | name | description | default |
     |------|------------|---------|
     | api_key | API Key string of OpenAI | - |
-    | system_role | API Key string of OpenAI | - |
+    | system_role | API Key string of OpenAI | "You are a helpful assistant." |
     | ask_cb | user message given to ChatGPT is thrown to this callback | None |
     | max_messages_in_context | Max messages in context given to ChatGPT | 20 |
     | answer_cb | ChatGPT answer is thrown to this callback | None |
@@ -114,10 +149,11 @@ Message broker between user and ChatGPT.
     | interval_sec | Interval of ChatGPT API call | 20.0 \[sec\] | 
 ### Notice
 - Default value of interval_sec is 20.0, since free user of OpenAI API can get only 3 completions per minitue.
+- The system role given by user remains ever as the oldest sentence of current context even if the number of messages is reached to the maximum, so ChatGPT doesn't forgot the role while current cunversation.
 
 ## Methods
 ### start()
-- Start ChatGPT conversation and calling user callbacks asyncronously.
+- Start YouTube Chat polling and ChatGPT conversation, then start calling user callbacks asyncronously.
 - No arguments required, nothing returns.
 
 ### join()
@@ -125,18 +161,34 @@ Message broker between user and ChatGPT.
 - No arguments required, nothing returns.
 
 ### connect()
-- Start ChatGPT conversation and calling user callbacks syncronously.
+- Start YouTube Chat polling and ChatGPT conversation, then start calling user callbacks syncronously.
 - Lines following the call of the method never executen before terminate of internal threads.
 - No arguments required, nothing returns.
 
 ### disconnect()
-- Request to terminate conversation and calling user callbacks.
+- Request to terminate YouTube Chat polling, ChatGPT conversation and calling user callbacks.
 - Internal process will be terminated soon after.
 - No arguments required, nothing returns.
 
 And other [threading.Thread](https://docs.python.org/3/library/threading.html) public pethods are available.
 
 ## Callbacks
+### get_item_cb
+- Callback for getting YouTube chat items.
+- You can implement several processes in it.
+- YouTube chat item is thrown as an argument.
+- It's not be assumed that any values are returned.
+### pre_filter_cb
+- pre putting queue filter.
+- YouTube chat item is thrown as an argument.
+- You can edit YouTube chat items before putting internal queue.
+- It's required that edited chat item is returned.
+- You can avoid putting internal queue by returning None.
+### post_filter_cb
+- post getting queue filter
+- You can edit YouTube chat items after popping internal queue.
+- It's required that edited chat item is returned.
+- You can avoid sending item to get_item_cb by returning None.
 ### ask_cb
 - Callback for getting questions that actually thrown to ChatGPT.
 - If you register external info to user message when you put it, you can obtain the external info here.
@@ -146,17 +198,10 @@ And other [threading.Thread](https://docs.python.org/3/library/threading.html) p
 - The type of completion is mentioned [here](https://platform.openai.com/docs/guides/chat).
 - It's not be assumed that any values are returned.
 
-## Concept of design
-- User message is put on internal queue and treated on internal thread.<br>
-This feature gives advantage when You put ChatGPT on chat stream.<br>
-Please try [this sample](samples/sample2.py) to experience the benefit.
-  ```usage
-  $ python3 ./sample2.py VIDEO-ID OpenAI-API-KEY
-  ```
-  ![](ReadMeParts/ChatAIAgent.gif)
-- The system role given by user remains ever as the oldest sentence of current context even if the number of messages is reached to the maximum, so ChatGPT doesn't forgot the role while current cunversation.
-
 ## Links
 StreamingChaatAgent uses following libraries internally.
 
-- [streamchat-agent](https://github.com/GeneralYadoc/StreamChatAgent)<br> YouTube chat poller which can get massages very smothly by using internal queue.
+- [streamchat-agent](https://github.com/GeneralYadoc/StreamChatAgent)<br>
+ YouTube chat poller which can get massages very smothly by using internal queue.
+- [chatai-agent](https://github.com/GeneralYadoc/ChatAIAgent)<br>
+ Message broker between user and ChatGPT.
