@@ -5,7 +5,7 @@ Message broker between YouTube chat stream and ChatGPT.
 - pick up massegase from YouTube Chat and generate answer by ChatGPT.
 - easily give role to ChatGPT.
 
-## Hou to install
+## How to install
 
 ### Install from PyPI
 - Install package to your environment.<br>
