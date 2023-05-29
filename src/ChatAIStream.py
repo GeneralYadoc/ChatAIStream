@@ -29,11 +29,6 @@ class ChatAIStream(threading.Thread):
     if self.ai_agent:
       self.ai_agent.put_message(ca.userMessage(message=c.message, extern=c))
   
-  def default_answer_cb(self, user_message, completion):
-    print("testtest")
-    answer = completion.choices[0]["message"]["content"]
-    print(f"[Answer] {answer}")
-
   def __init__( self, params):
     self.get_stream_message_cb=params.stream_params.get_item_cb
     params.stream_params.get_item_cb=self.ask_stream_message_to_ai
