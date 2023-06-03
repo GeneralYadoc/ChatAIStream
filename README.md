@@ -199,7 +199,7 @@ And other [threading.Thread](https://docs.python.org/3/library/threading.html) p
 - It's not be assumed that any values are returned.
 
 ## Links
-StreamingChatAgent uses following libraries internally.
+ChatAIStream uses following libraries internally.
 
 - [streamchat-agent](https://github.com/GeneralYadoc/StreamChatAgent)<br>
  YouTube chat poller which can get massages very smothly by using internal queue.
