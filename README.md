@@ -31,8 +31,6 @@ Message broker between YouTube chat stream and ChatGPT.
 
 - Sample codes exist [here](samples/sample.py).
   ``` sample.py
-  # To execute this sample, please install streamchat-agent from PyPI as follows.
-  # $ pip install streamchat-agent
   import sys
   import time
   import math

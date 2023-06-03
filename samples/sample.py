@@ -1,12 +1,10 @@
-# To execute this sample, please install streamchat-agent from PyPI as follows.
-# $ pip install streamchat-agent
 import sys
 import time
 import math
 import datetime
 import ChatAIStream as cas
 
-# print sentencce by a character incrementally.
+# print sentence by a character incrementally.
 def print_incremental(st, interval_sec):
   for i in range(len(st)):
     if not running:
