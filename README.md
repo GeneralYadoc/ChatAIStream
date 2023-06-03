@@ -112,7 +112,7 @@ Message broker between YouTube chat stream and ChatGPT.
 
 - Usage of the sample
   ```usage
-  $ python3 ./sample2.py VIDEO-ID OpenAI-API-KEY
+  $ python3 ./sample.py VIDEO-ID OpenAI-API-KEY
   ```
 - Output of the sample<br>
   The outputs of the right window are provided by this sample.<br>
