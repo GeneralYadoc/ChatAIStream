@@ -39,7 +39,7 @@ Message broker between YouTube chat stream and ChatGPT.
   import datetime
   import ChatAIStream as cas
 
-  # print sentencce by a character incrementally.
+  # print sentence by a character incrementally.
   def print_incremental(st, interval_sec):
     for i in range(len(st)):
       if not running:
@@ -98,7 +98,7 @@ Message broker between YouTube chat stream and ChatGPT.
   # Wait any key inputted from keyboad.
   input()
 
-  # Turn off runnging flag in order to finish printing fung of dhit sample.
+  # Turn off runnging flag in order to finish printing messages and answers by the sample.
   running=False
 
   # Finish getting ChatGPT answers.

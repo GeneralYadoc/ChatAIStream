@@ -65,7 +65,7 @@ ai_stream.start()
 # Wait any key inputted from keyboad.
 input()
 
-# Turn off runnging flag in order to finish printing fung of dhit sample.
+# Turn off runnging flag in order to finish printing messages and answers by the sample.
 running=False
 
 # Finish getting ChatGPT answers.
