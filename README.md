@@ -137,7 +137,7 @@ Message broker between YouTube chat stream and ChatGPT.
     | name | description | default |
     |------|------------|---------|
     | api_key | API Key string of OpenAI | - |
-    | system_role | API Key string of OpenAI | "You are a helpful assistant." |
+    | system_role | ChatGPT role in convesation | "You are a helpful assistant." |
     | ask_cb | user message given to ChatGPT is thrown to this callback | None |
     | max_messages_in_context | Max messages in context given to ChatGPT | 20 |
     | answer_cb | ChatGPT answer is thrown to this callback | None |
