@@ -147,7 +147,7 @@ Message broker between YouTube chat stream and ChatGPT.
     | interval_sec | Interval of ChatGPT API call | 20.0 \[sec\] | 
 ### Notice
 - Please refer [pytchat README](https://github.com/taizan-hokuto/pytchat) to know the type of YouTube Chat item used by get_item_cb, pre_filter_cb and post filter_cb.
-- Stamps in a message and messages consisted by stamps only are removed defaultly even if user doesn't set pre_filter_cb.
+- Emoticons in a message and messages consisted by emoticons only are removed defaultly even if user doesn't set pre_filter_cb.
 - Default value of interval_sec is 20.0, since free user of OpenAI API can get only 3 completions per minitue.
 - The system role given by user remains ever as the oldest sentence of current context even if the number of messages is reached to the maximum, so ChatGPT doesn't forgot the role while current cunversation.
 
@@ -182,6 +182,7 @@ And other [threading.Thread](https://docs.python.org/3/library/threading.html) p
 - pre putting queue filter.
 - YouTube chat item is thrown as an argument.
 - You can edit YouTube chat items before putting internal queue.
+- <b>If you want to get Complete items from YouTube, please implement this callback, since emoticons in a message and messages consisted by emoticons only are already removed from the items gotten in get_item_cb.</b> 
 - It's required that edited chat item is returned.
 - You can avoid putting internal queue by returning None.
 ### post_filter_cb

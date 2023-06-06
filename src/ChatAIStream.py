@@ -17,10 +17,10 @@ class params():
 class ChatAIStream(threading.Thread):
   def my_pre_filter_cb(self, c):
     prefiltered_c = c
-    prefiltered_c.message = re.sub(r':[^:]+:', ".", prefiltered_c.message)
-    prefiltered_c.message = re.sub(r'^[\.]+', "", prefiltered_c.message)
     if prefiltered_c and self.pre_filter_cb:
       prefiltered_c = self.pre_filter_cb(prefiltered_c)
+    prefiltered_c.message = re.sub(r':[^:]+:', ".", prefiltered_c.message)
+    prefiltered_c.message = re.sub(r'^[\.]+', "", prefiltered_c.message)
     return None if prefiltered_c.message == "" else prefiltered_c
 
   def ask_stream_message_to_ai(self, c):
