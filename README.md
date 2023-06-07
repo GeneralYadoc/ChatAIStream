@@ -122,7 +122,7 @@ Message broker between YouTube chat stream and ChatGPT.
 ## Arguments of Constructor
 - ChatAIStream object can be configured with following params given to constructor.
 
-  ### steamParams
+  ### streamParams
     | name | description | default |
     |------|------------|---------|
     | video_id | String following after 'v=' in url of target YouTube live | - |
