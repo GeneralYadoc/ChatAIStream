@@ -5,8 +5,8 @@ from dataclasses import dataclass
 import StreamChatAgent as sca
 import ChatAIAgent as ca
 
-
 streamParams = sca.params
+userMessage = ca.userMessage
 aiParams = ca.params
 
 @dataclass
