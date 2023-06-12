@@ -1,2 +1,2 @@
-streamchat-agent==1.0.1
-chatai-agent==1.0.0
+streamchat-agent==1.0.2
+chatai-agent==1.1.0

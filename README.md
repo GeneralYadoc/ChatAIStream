@@ -170,6 +170,9 @@ Message broker between YouTube chat stream and ChatGPT.
 - Internal process will be terminated soon after.
 - No arguments required, nothing returns.
 
+### full_messages_for_ask()
+- Indicate whether the queue which spools messages to send ChatAI is full or not.
+
 And other [threading.Thread](https://docs.python.org/3/library/threading.html) public pethods are available.
 
 ## Callbacks
